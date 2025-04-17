@@ -5,178 +5,178 @@
 </div>
 
 <div align="center">
-  <img src="images/examples/24game.png" alt="24 Game Example" width="400"/>
+  <img src="images/examples/24game.png" alt="24点游戏示例" width="400"/>
 </div>
 
 <!-- <div align="center">
-  <img src="images/results/thinking_length_vs_accuracy_comparison_sft_rl_v2.png" alt="24 Game Reasoning Ability Comparison" width="600"/>
+  <img src="images/results/thinking_length_vs_accuracy_comparison_sft_rl_v2.png" alt="24点游戏推理能力比较" width="600"/>
 </div> -->
 
-## Introduction
+## 简介
 
-The 24 Game is a classic mathematical game that requires using 4 numbers and basic operations (addition, subtraction, multiplication, division) to obtain the result 24. This project aims to enhance the reasoning and self-verification capabilities of Large Language Models (LLMs) in the 24 Game through different training methods (Zero-RL, SFT, SFT+RL).
+24点游戏是一个经典的数学游戏，要求使用4个数字和基本运算（加减乘除）得到结果24。本项目旨在通过不同的训练方法（Zero-RL、SFT、SFT+RL）来增强大语言模型（LLM）在24点游戏中的推理能力和自主验证能力。
 
-### Game Rules
+### 游戏规则
 
-- Given a deck of cards, the goal is to use the numbers from four cards and arithmetic operations to reach a final result of 24
-- Each card must be used exactly once
-- You can use addition (+), subtraction (-), multiplication (×), and division (÷)
-- You can use parentheses () to change the order of operations
-- No other operators or numbers can be used
-- Division results can be decimal or infinite recurring numbers
+- 给定一副扑克牌，目标是使用四张牌的数字和加减乘除运算，最终得出结果24
+- 每张牌必须且只能使用一次
+- 可以使用加 (+)、减 (-)、乘 (×)、除 (÷) 四种运算
+- 可以使用括号 () 改变运算顺序
+- 不能使用其他运算符号或数字
+- 除法运算中结果允许是小数和无限循环除不尽
 
-For example: If the four cards are 3, 3, 8, 8, you can get the answer through (8÷3(3-8÷3))=24.
+例如：四张牌是 3, 3, 8, 8，可以通过 (8÷3(3-8÷3))=24 来得到答案。
 
-## Environment Setup
+## 环境配置
 
-### Installation with Conda
+### 使用Conda安装
 
 ```bash
-# Create conda environment
+# 创建conda环境
 conda create -n 24game python=3.10
 conda activate 24game
 
-# Install dependencies
+# 安装依赖
 pip install -r requirements.txt
 
-# If you need VLLM for accelerated inference
+# 如果需要使用VLLM进行推理加速
 pip install vllm
 ```
 
-## Project Structure
+## 项目结构
 
 ```
 24-Game-Reasoning/
-├── data/                      # Dataset directory
-│   ├── 24game_grpo/           # RL dataset
-│   └── 24game_sft/            # SFT dataset
-├── docs/                      # Documentation
-├── images/                    # Images directory
-│   ├── examples/              # Example images
-│   └── results/               # Result visualization images
-├── results/                   # Evaluation results
-├── scripts/                   # Scripts directory
-│   ├── data_processing/       # Data processing scripts
-│   ├── evaluation/            # Evaluation scripts
-│   └── training/              # Training scripts
-├── templates/                 # Prompt templates
-├── utils/                     # Utility functions
-├── verl/                      # RL training framework
-├── .gitignore                 # Git ignore file
-├── README.md                  # English README
-├── README_ZH.md               # Chinese README
-└── requirements.txt           # Python dependencies
+├── data/                      # 数据集目录
+│   ├── 24game_grpo/           # RL数据集
+│   └── 24game_sft/            # SFT数据集
+├── docs/                      # 文档
+├── images/                    # 图片目录
+│   ├── examples/              # 示例图片
+│   └── results/               # 结果可视化图片
+├── results/                   # 评估结果
+├── scripts/                   # 脚本目录
+│   ├── data_processing/       # 数据处理脚本
+│   ├── evaluation/            # 评估脚本
+│   └── training/              # 训练脚本
+├── templates/                 # 提示模板
+├── utils/                     # 工具函数
+├── verl/                      # RL训练框架
+├── .gitignore                 # Git忽略文件
+├── README.md                  # 英文README
+├── README_ZH.md               # 中文README
+└── requirements.txt           # Python依赖
 ```
 
-## Usage
+## 使用方法
 
-### 1. Data Preparation
+### 1. 数据准备
 
-First, you need to generate the 24 Game dataset:
+首先需要生成24点游戏数据集：
 
 ```bash
-# Generate 24 Game data
+# 生成24点游戏数据
 python scripts/data_processing/data_preparation.py
 ```
 
-### 2. Training Models
+### 2. 训练模型
 
-This project implements three training methods: Zero-RL, SFT, and SFT+RL.
+本项目实现了三种训练方法：Zero-RL、SFT和SFT+RL。
 
-#### 2.1 Zero-RL Training
+#### 2.1 Zero-RL训练
 
-The Zero-RL method directly uses RL to train the base model without prior SFT:
+Zero-RL方法直接使用RL训练基础模型，无需先进行SFT：
 
 ```bash
 cd verl
 bash scripts/run_qwen25_math_grpo.sh
 ```
 
-#### 2.2 SFT Training
+#### 2.2 SFT训练
 
-The SFT (Supervised Fine-Tuning) method uses human-annotated data for supervised fine-tuning:
+SFT（Supervised Fine-Tuning）方法使用人类标注的数据进行监督微调：
 
 ```bash
 cd verl
-bash scripts/run_qwen25_math_sft.sh 4 None  # 4 indicates using 4 GPUs
+bash scripts/run_qwen25_math_sft.sh 4 None  # 4表示使用4个GPU
 ```
 
-#### 2.3 SFT+RL Training
+#### 2.3 SFT+RL训练
 
-The SFT+RL method first performs SFT training, then follows with RL training:
+SFT+RL方法先进行SFT训练，然后再进行RL训练：
 
 ```bash
 cd verl
 bash scripts/run_qwen25_math_grpo_sft_rl.sh
 ```
 
-### 3. Evaluating Models
+### 3. 评估模型
 
-Use the evaluation script to assess trained models:
+使用评估脚本对训练好的模型进行评估：
 
 ```bash
 python scripts/evaluation/eval.py --base_model_path /path/to/model --val_data_path data/24game_sft/val.parquet
 ```
 
-## Experimental Results
+## 实验结果
 
-### Accuracy Comparison
+### 准确率对比
 
 <div align="center">
-  <img src="images/results/accuracy_trend_rl_zero_v2.png" alt="Zero-RL Accuracy Trend" width="400"/>
-  <p>Zero-RL Method Accuracy Trend</p>
+  <img src="images/results/accuracy_trend_rl_zero_v2.png" alt="Zero-RL准确率变化趋势" width="400"/>
+  <p>Zero-RL方法的准确率变化趋势</p>
 </div>
 
 <div align="center">
-  <img src="images/results/accuracy_trend_sft.png" alt="SFT Accuracy Trend" width="400"/>
-  <p>SFT Method Accuracy Trend</p>
+  <img src="images/results/accuracy_trend_sft.png" alt="SFT准确率变化趋势" width="400"/>
+  <p>SFT方法的准确率变化趋势</p>
 </div>
 
 <div align="center">
-  <img src="images/results/accuracy_trend_sft_rl_v2.png" alt="SFT+RL Accuracy Trend" width="400"/>
-  <p>SFT+RL Method Accuracy Trend</p>
+  <img src="images/results/accuracy_trend_sft_rl_v2.png" alt="SFT+RL准确率变化趋势" width="400"/>
+  <p>SFT+RL方法的准确率变化趋势</p>
 </div>
 
-### Relationship Between Thinking Length and Accuracy
+### 思考长度与准确率关系
 
 <div align="center">
-  <img src="images/results/thinking_length_vs_accuracy_comparison_sft.png" alt="SFT Thinking Length vs Accuracy" width="400"/>
-  <p>SFT Method: Thinking Length vs Accuracy</p>
-</div>
-
-<div align="center">
-  <img src="images/results/thinking_length_vs_accuracy_comparison_rl_zero.png" alt="Zero-RL Thinking Length vs Accuracy" width="400"/>
-  <p>Zero-RL Method: Thinking Length vs Accuracy</p>
+  <img src="images/results/thinking_length_vs_accuracy_comparison_sft.png" alt="SFT思考长度与准确率关系" width="400"/>
+  <p>SFT方法的思考长度与准确率关系</p>
 </div>
 
 <div align="center">
-  <img src="images/results/thinking_length_vs_accuracy_comparison_sft_rl_v2.png" alt="SFT+RL Thinking Length vs Accuracy" width="400"/>
-  <p>SFT+RL Method: Thinking Length vs Accuracy</p>
+  <img src="images/results/thinking_length_vs_accuracy_comparison_rl_zero.png" alt="Zero-RL思考长度与准确率关系" width="400"/>
+  <p>Zero-RL方法的思考长度与准确率关系</p>
 </div>
 
-### Method Comparison
+<div align="center">
+  <img src="images/results/thinking_length_vs_accuracy_comparison_sft_rl_v2.png" alt="SFT+RL思考长度与准确率关系" width="400"/>
+  <p>SFT+RL方法的思考长度与准确率关系</p>
+</div>
 
-We compared three methods (Zero-RL, SFT, SFT+RL) on the 24 Game:
+### 方法对比
 
-1. **Zero-RL**: Directly uses RL to train the base model without prior SFT
-2. **SFT**: Uses human-annotated data for supervised fine-tuning
-3. **SFT+RL**: First performs SFT training, then follows with RL training
+我们比较了三种方法（Zero-RL、SFT、SFT+RL）在24点游戏上的表现：
 
-The experimental results show that the SFT+RL method achieved the best performance in terms of accuracy and reasoning ability, while the Zero-RL method also demonstrated good performance, especially with longer chains of thought.
+1. **Zero-RL**：直接使用RL训练基础模型，无需先进行SFT
+2. **SFT**：使用人类标注的数据进行监督微调
+3. **SFT+RL**：先进行SFT训练，然后再进行RL训练
 
-## Conclusion
+实验结果表明，SFT+RL方法在准确率和推理能力上取得了最好的效果，而Zero-RL方法也展现出了良好的性能，特别是在长思考链上的表现。
 
-Through the experiments in this project, we found that:
+## 结论
 
-1. RL training can effectively enhance the model's reasoning and self-verification capabilities in the 24 Game
-2. There is a positive correlation between the length of the chain of thought and accuracy, but excessively long chains may lead to computational resource waste
-3. The SFT+RL combination method achieves the best results, but the Zero-RL method is also an effective training strategy
+通过本项目的实验，我们发现：
 
-These findings have significant implications for enhancing the mathematical reasoning and self-verification capabilities of large language models and can be applied to a wider range of mathematical problem-solving and logical reasoning tasks.
+1. RL训练能够有效提升模型在24点游戏中的推理能力和自主验证能力
+2. 思考链的长度与准确率存在正相关关系，但过长的思考链可能导致计算资源浪费
+3. SFT+RL组合方法能够取得最佳效果，但Zero-RL方法也是一种有效的训练策略
 
-## Citation
+这些发现对于增强大语言模型的数学推理能力和自主验证能力具有重要意义，可以应用于更广泛的数学问题求解和逻辑推理任务中。
 
-If you use this project in your research, please cite it using the following format:
+## 引用
+
+如果您在研究中使用了本项目，请按以下格式引用：
 
 ```bibtex
 @misc{24GameReasoning2024,
@@ -189,6 +189,6 @@ If you use this project in your research, please cite it using the following for
 }
 ```
 
-## License
+## 许可证
 
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details. 
+本项目采用 MIT 许可证。详情请参阅 [LICENSE](LICENSE) 文件。
